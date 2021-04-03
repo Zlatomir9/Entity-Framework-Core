@@ -32,7 +32,7 @@
 
             foreach (var jsonDeparment in departmentDtos)
             {
-                if (!IsValid(jsonDeparment) || jsonDeparment.Cells.Length == 0)
+                if (!IsValid(jsonDeparment) || !jsonDeparment.Cells.Any() || !jsonDeparment.Cells.All(IsValid))
                 {
                     stringBuilder.AppendLine(ErrorMessage);
                     continue;
@@ -41,32 +41,37 @@
                 var department = new Department
                 {
                     Name = jsonDeparment.Name,
+                    Cells = jsonDeparment.Cells.Select(c => new Cell 
+                    {
+                        CellNumber = c.CellNumber,
+                        HasWindow = c.HasWindow
+                    }).ToArray()
                 };
 
-                bool isInvalidCell = false;
+                //bool isInvalidCell = false;
 
-                foreach (var jsonCell in jsonDeparment.Cells)
-                {
-                    if (!IsValid(jsonCell))
-                    {
-                        stringBuilder.AppendLine(ErrorMessage);
-                        isInvalidCell = true;
-                        break;
-                    }
+                //foreach (var jsonCell in jsonDeparment.Cells)
+                //{
+                //    if (!IsValid(jsonCell))
+                //    {
+                //        stringBuilder.AppendLine(ErrorMessage);
+                //        isInvalidCell = true;
+                //        break;
+                //    }
 
-                    var cell = new Cell
-                    {
-                        CellNumber = jsonCell.CellNumber,
-                        HasWindow = jsonCell.HasWindow
-                    };
+                //    var cell = new Cell
+                //    {
+                //        CellNumber = jsonCell.CellNumber,
+                //        HasWindow = jsonCell.HasWindow
+                //    };
 
-                    department.Cells.Add(cell);
-                }
+                //    department.Cells.Add(cell);
+                //}
 
-                if (isInvalidCell)
-                {
-                    continue;
-                }
+                //if (isInvalidCell)
+                //{
+                //    continue;
+                //}
 
                 context.Departments.Add(department);
                 context.SaveChanges();
