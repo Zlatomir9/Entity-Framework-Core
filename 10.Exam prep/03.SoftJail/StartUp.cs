@@ -12,21 +12,19 @@
         {
             var context = new SoftJailDbContext();
 
-            //Mapper.Initialize(config => config.AddProfile<SoftJailProfile>());
+            Mapper.Initialize(config => config.AddProfile<SoftJailProfile>());
 
-            //ResetDatabase(context, shouldDropDatabase: false);
-
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            ResetDatabase(context, shouldDropDatabase: true);
+			
             var projectDir = GetProjectDirectory();
 
             ImportEntities(context, projectDir + @"Datasets/", projectDir + @"ImportResults/");
             ExportEntities(context, projectDir + @"ExportResults/");
 
-            //using (var transaction = context.Database.BeginTransaction())
-            //{
-            //    transaction.Rollback();
-            //}
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                transaction.Rollback();
+            }
         }
 
         private static void ImportEntities(SoftJailDbContext context, string baseDir, string exportDir)
